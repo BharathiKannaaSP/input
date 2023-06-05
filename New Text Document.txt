@@ -1,0 +1,60 @@
+import React, { useState } from "react";
+
+const NumberTextbox = () => {
+  const [value, setValue] = useState("");
+  const [submittedValues, setSubmittedValues] = useState([]);
+  const [dotUsed, setDotUsed] = useState(false);
+
+  const handleChange = (event) => {
+    const inputValue = event.target.value;
+
+    // Check if the input value is a valid number or contains . or -
+    if (/^[0-9.-]*$/.test(inputValue)) {
+      setValue(inputValue);
+    }
+  };
+
+  const handleSubmit = (event) => {
+    event.preventDefault();
+
+    // Check if dot already exists in the submitted values
+    if (dotUsed && value === ".") {
+      setValue("");
+      return; // Don't proceed if dot is used again
+    }
+
+    if (value === ".") {
+      setDotUsed(true);
+    }
+
+    // Convert value to negative if hyphen is entered
+    const newValue = value === "-" ? -value : value;
+    setSubmittedValues([...submittedValues, newValue]);
+    setValue("");
+  };
+
+  const handlePrint = () => {
+    window.print();
+  };
+
+  const concatenatedValue = submittedValues.join("");
+
+  return (
+    <div>
+      <form onSubmit={handleSubmit}>
+        <input
+          type="text"
+          value={value}
+          maxLength={1}
+          onChange={handleChange}
+          placeholder="Enter a number, ., or -"
+        />
+        <button type="submit">Submit</button>
+      </form>
+      <button onClick={handlePrint}>Print</button>
+      <p>Concatenated Values: {concatenatedValue}</p>
+    </div>
+  );
+};
+
+export default NumberTextbox;
