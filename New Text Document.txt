@@ -1,60 +1,41 @@
-import React, { useState } from "react";
+import React, { useState } from 'react';
 
-const NumberTextbox = () => {
-  const [value, setValue] = useState("");
-  const [submittedValues, setSubmittedValues] = useState([]);
-  const [dotUsed, setDotUsed] = useState(false);
+function App() {
+  const [inputValue, setInputValue] = useState('');
 
-  const handleChange = (event) => {
-    const inputValue = event.target.value;
+  const handleChange = (e) => {
+    let value = e.target.value;
 
-    // Check if the input value is a valid number or contains . or -
-    if (/^[0-9.-]*$/.test(inputValue)) {
-      setValue(inputValue);
-    }
-  };
+    // Remove non-digit and non-decimal characters
+    value = value.replace(/[^0-9.]/g, '');
 
-  const handleSubmit = (event) => {
-    event.preventDefault();
-
-    // Check if dot already exists in the submitted values
-    if (dotUsed && value === ".") {
-      setValue("");
-      return; // Don't proceed if dot is used again
+    // Allow only one decimal point
+    const parts = value.split('.');
+    if (parts.length > 2) {
+      value = parts[0] + '.' + parts.slice(1).join('');
     }
 
-    if (value === ".") {
-      setDotUsed(true);
+    setInputValue(value);
+  };
+
+  const handleKeyDown = (e) => {
+    if (e.key === '-') {
+      if (!inputValue.startsWith('-')) {
+        setInputValue('-' + inputValue);
+      } else {
+        setInputValue(inputValue.substring(1));
+      }
+      e.preventDefault(); // Prevent the minus sign from being entered in the textbox
     }
-
-    // Convert value to negative if hyphen is entered
-    const newValue = value === "-" ? -value : value;
-    setSubmittedValues([...submittedValues, newValue]);
-    setValue("");
   };
-
-  const handlePrint = () => {
-    window.print();
-  };
-
-  const concatenatedValue = submittedValues.join("");
 
   return (
     <div>
-      <form onSubmit={handleSubmit}>
-        <input
-          type="text"
-          value={value}
-          maxLength={1}
-          onChange={handleChange}
-          placeholder="Enter a number, ., or -"
-        />
-        <button type="submit">Submit</button>
-      </form>
-      <button onClick={handlePrint}>Print</button>
-      <p>Concatenated Values: {concatenatedValue}</p>
+      <h1>Number Input App</h1>
+      <input type="text" value={inputValue} onChange={handleChange} onKeyDown={handleKeyDown} />
+      <p>Value: {inputValue}</p>
     </div>
   );
-};
+}
 
-export default NumberTextbox;
+export default App;
